@@ -5,30 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin - Upload Content</title>
 <meta name="theme-color" content="#0B3D91">
-
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5}
-header{background:#0B3D91;color:white;padding:15px;text-align:center;font-size:1.3em;font-weight:bold}
-.nav-tabs{display:flex;background:#222}
-.nav-tabs button{flex:1;padding:10px;border:none;background:#222;color:white;font-weight:bold;cursor:pointer}
-.nav-tabs button.active{background:#444}
-section{padding:15px}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{border:1px solid #ccc;padding:8px;font-size:.9em;text-align:left}
-th{background:#333;color:white}
-button.action-btn{padding:4px 8px;border:none;border-radius:4px;cursor:pointer;margin:2px}
-.edit{background:#0b79d0;color:white}
-.delete{background:#d01a0b;color:white}
-.save{background:#0bb40b;color:white}
-.cancel{background:#888;color:white}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);justify-content:center;align-items:center;z-index:1000}
-.modal-content{background:white;padding:20px;border-radius:10px;width:90%;max-width:500px}
-.modal-content label{display:block;margin-top:10px;font-weight:bold}
-.modal-content input,.modal-content select{width:100%;padding:8px;margin-top:5px}
-.modal-buttons{text-align:right;margin-top:15px}
+body { margin:0; font-family: Arial, sans-serif; background:#f5f5f5; color:#111; }
+header { background:#0B3D91; color:white; padding:15px 20px; text-align:center; font-size:1.3em; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.2); }
+.nav-tabs { display:flex; background:#222; }
+.nav-tabs button { flex:1; padding:10px; border:none; background:#222; color:white; cursor:pointer; font-weight:bold; transition:0.2s; }
+.nav-tabs button.active { background:#444; }
+.nav-tabs button:hover { background:#333; }
+section { padding:15px; }
+table { width:100%; border-collapse: collapse; margin-top:10px; }
+table th, table td { border:1px solid #ccc; padding:8px; text-align:left; font-size:0.9em; }
+table th { background:#333; color:white; }
+table tr:nth-child(even) { background:#f9f9f9; }
+table tr:hover { background:#eee; }
+button.action-btn { padding:4px 8px; margin:2px; border:none; border-radius:4px; cursor:pointer; font-size:0.8em; }
+button.edit { background:#0b79d0; color:white; }
+button.delete { background:#d01a0b; color:white; }
+button.save { background:#0bb40b; color:white; }
+button.cancel { background:#888; color:white; }
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000; }
+.modal-content { background:white; padding:20px; border-radius:10px; width:90%; max-width:500px; }
+.modal-content h3 { margin-top:0; }
+.modal-content label { display:block; margin-top:10px; font-weight:bold; }
+.modal-content input, .modal-content select { width:100%; padding:8px; margin-top:5px; border-radius:5px; border:1px solid #ccc; }
+.modal-buttons { text-align:right; margin-top:15px; }
 </style>
 </head>
 <body>
@@ -36,231 +39,333 @@ button.action-btn{padding:4px 8px;border:none;border-radius:4px;cursor:pointer;m
 <header>Admin - Upload Content</header>
 
 <div class="nav-tabs">
-<button class="active" onclick="showTab(event,'videos')">Videos</button>
-<button onclick="showTab(event,'documents')">Documents</button>
-<button onclick="showTab(event,'pastpapers')">Past Papers</button>
-<button onclick="showTab(event,'tasks')">Tasks</button>
+    <button class="active" onclick="showTab('videos')">Videos</button>
+    <button onclick="showTab('documents')">Documents</button>
+    <button onclick="showTab('pastpapers')">Past Papers</button>
+    <button onclick="showTab('tasks')">Tasks</button>
 </div>
 
-<section id="videos">
-<button onclick="openModal('videos')">+ Add Video</button>
-<table>
-<thead>
-<tr><th>Term</th><th>Course</th><th>Order</th><th>Title</th><th>Link</th><th>Actions</th></tr>
-</thead>
-<tbody id="videos-body"></tbody>
-</table>
+<section id="videos" class="tab-section">
+    <button onclick="openModal('videos')">+ Add Video</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Title</th>
+                <th>Subject</th>
+                <th>Grade</th>
+                <th>Main Topic</th>
+                <th>Link</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="videos-body"></tbody>
+    </table>
 </section>
 
-<section id="documents" style="display:none;">
-<button onclick="openModal('documents')">+ Add Document</button>
-<table>
-<thead>
-<tr><th>Term</th><th>Course</th><th>Order</th><th>Title</th><th>Link</th><th>Actions</th></tr>
-</thead>
-<tbody id="documents-body"></tbody>
-</table>
+<section id="documents" class="tab-section" style="display:none;">
+    <button onclick="openModal('documents')">+ Add Document</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Title</th>
+                <th>Subject</th>
+                <th>Grade</th>
+                <th>Main Topic</th>
+                <th>Link</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="documents-body"></tbody>
+    </table>
 </section>
 
-<section id="pastpapers" style="display:none;">
-<button onclick="openModal('pastpapers')">+ Add Past Paper</button>
-<table>
-<thead>
-<tr><th>Title</th><th>Subject</th><th>Year</th><th>Link</th><th>Actions</th></tr>
-</thead>
-<tbody id="pastpapers-body"></tbody>
-</table>
+<section id="pastpapers" class="tab-section" style="display:none;">
+    <button onclick="openModal('pastpapers')">+ Add Past Paper</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Title</th>
+                <th>Subject</th>
+                <th>Year</th>
+                <th>Link</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="pastpapers-body"></tbody>
+    </table>
 </section>
 
-<section id="tasks" style="display:none;">
-<button onclick="openModal('tasks')">+ Add Task</button>
-<table>
-<thead>
-<tr><th>Title</th><th>Description</th><th>Due</th><th>Link</th><th>Actions</th></tr>
-</thead>
-<tbody id="tasks-body"></tbody>
-</table>
+<section id="tasks" class="tab-section" style="display:none;">
+    <button onclick="openModal('tasks')">+ Add Task</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Due</th>
+                <th>Link</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tasks-body"></tbody>
+    </table>
 </section>
 
 <div class="modal" id="modal">
-<div class="modal-content">
-<h3 id="modal-title"></h3>
-<form id="modal-form"></form>
-<div class="modal-buttons">
-<button type="button" class="action-btn save" onclick="saveModal()">Save</button>
-<button type="button" class="action-btn cancel" onclick="closeModal()">Cancel</button>
-</div>
-</div>
+    <div class="modal-content">
+        <h3 id="modal-title"></h3>
+        <form id="modal-form"></form>
+        <div class="modal-buttons">
+            <button class="action-btn save" onclick="saveModal()">Save</button>
+            <button class="action-btn cancel" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
 </div>
 
 <script>
 const firebaseConfig = {
-  apiKey:"AIzaSyBB347urZnfcgO5KKpSnWOVVSHXSYtEgGU",
-  authDomain:"smart-hub2.firebaseapp.com",
-  projectId:"smart-hub2"
+  
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-const subjectsList = ["BI110","CH110","PH110","MA110","CS111","LA111"];
-const termsList = [1,2,3];
+const subjects = {
+  "ADMA": ["Topic 1", "Topic 2","Revision","OTHERS"],
+  "BIOLOGY": ["Living Organisms And Life Processes","Cell Structure And Organisation","Enzymes","Nutrients","Nutrition In Plants","Saprophytic Nutrition","Nutrition In Animals","Resipiratiry System","Health","Transport And Storage In Olants","Transport In Man","Excretion","Homeostasis","Endocrine System","Nervious System","Skeleton And Locomotion","Responses","Growth","Asexual Reproduction","Sexual Reproduction In Flowering Plants","Reproduction In Animals","Genetics","Classification In Plants And Animals","The Soil","Ecology","Revision","OTHERS"],
+  "CIVIC EDUCATION": ["Government", "Rights","Revision","OTHERS"],
+  "ENGLISH": ["Grammar", "Structure","Summary","Revision","Comprehension","OTHERS"],
+  "GEOGRAPHY": ["Maps", "Climate","Revision","OTHERS"],
+  "PRINCIPLES OF ACCOUNTS": ["Books Of Original Entry", "Financial Statements","Revisions","OTHERS"],
+  "RELIGIOUS EDUCATION": ["Ethics", "History","Revision","OTHERS"],
+  "PHYSICS": ["Physical Quantities", "Kinematics","Dynamics","Mass, Weight And Density","Turning Effect Of Forces","Pressure","Work, Energy And Power","Temperature","Thermal Properties","Light","Sound","Electromagnetic Spectrum","Electricity","Magnetism","Atomic Physics","Revisions","OTHERS"],
+  "CHEMISTRY": ["Introduction To Chemistry", "The Particulate Nature Of Matter","Experiment Techniques","Atoms,Elements And Compounds","Acid, Base And Salts","Mole Concepts","Chemical Reaction","The Periodic Table","Chemistry And Electricity","Metals","Non Metals","Organic Chemistry","Revision","OTHERS"],"MATHEMATICS":["Power And Indices","Set Theory","Algebra","Relation And Function","Quadratic Functions","Variations","Matrices","Vectors","Coodinate Geometry","Linear Programing","Circle Geometry","Trigonometry","Mensuration","Earth Geometry","Construction","Series And Sequences","Statistics","Kinematics","Probabilities","Revisions","OTHERS"]
+};
 
-let currentCollection="", editingDocId=null;
+let currentCollection = '';
+let editingDocId = null;
 
-// Tabs
-function showTab(e,tab){
-document.querySelectorAll("section").forEach(s=>s.style.display="none");
-document.getElementById(tab).style.display="block";
-document.querySelectorAll(".nav-tabs button").forEach(b=>b.classList.remove("active"));
-e.currentTarget.classList.add("active");
+// --- Tabs ---
+function showTab(tabName){
+    document.querySelectorAll('.tab-section').forEach(sec => sec.style.display='none');
+    document.getElementById(tabName).style.display='block';
+    document.querySelectorAll('.nav-tabs button').forEach(btn => btn.classList.remove('active'));
+    event.currentTarget.classList.add('active');
 }
 
-// Modal
+// --- Modal ---
 function openModal(collection){
-currentCollection=collection;
-const form=document.getElementById("modal-form");
-document.getElementById("modal-title").innerText="Add "+collection;
+    currentCollection = collection;
+    editingDocId = null;
+    const form = document.getElementById('modal-form');
+    form.innerHTML = '';
+    document.getElementById('modal-title').innerText = `Add ${collection.slice(0,-1)}`;
 
-if(collection==="videos"||collection==="documents"){
-form.innerHTML=`
-<label>Term</label>
-<select id="modal-term">${termsList.map(t=>`<option value="${t}">${t}</option>`).join("")}</select>
-<label>Course</label><select id="modal-course">${subjectsList.map(s=>`<option>${s}</option>`).join("")}</select>
-<label>Order</label><input type="number" id="modal-order" value="1">
-<label>Title</label><input id="modal-title-field">
-<label>Link</label><input id="modal-link">`;
-}
-else if(collection==="pastpapers"){
-form.innerHTML=`
-<label>Title</label><input id="modal-title-field">
-<label>Subject</label><select id="modal-course">${subjectsList.map(s=>`<option>${s}</option>`).join("")}</select>
-<label>Year</label><input id="modal-year">
-<label>Link</label><input id="modal-link">`;
-}
-else{
-form.innerHTML=`
-<label>Title</label><input id="modal-title-field">
-<label>Description</label><input id="modal-desc">
-<label>Due</label><input type="date" id="modal-due">
-<label>Link</label><input id="modal-link">`;
+    if(collection==='videos'||collection==='documents'){
+        const gradeField = `<label>Grade (Biology only)</label><select id="modal-grade"><option value="">Select Grade</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>`;
+        const mainTopicField = `<label>Main Topic</label><select id="modal-mainTopic"><option value="">Select Main Topic</option></select>`;
+
+        form.innerHTML = `
+            <label>Title</label><input type="text" id="modal-title-field" required>
+            <label>Subject</label>
+            <select id="modal-subject" required>
+                <option value="">Select Subject</option>
+                ${Object.keys(subjects).map(s=>`<option value="${s}">${s}</option>`).join('')}
+            </select>
+            ${gradeField}
+            ${mainTopicField}
+            <label>Link</label><input type="text" id="modal-link" required>
+            <label>Order</label><input type="number" id="modal-order" min="1" placeholder="Auto" />
+        `;
+
+        const subjectSelect = form.querySelector('#modal-subject');
+        const mainTopicSelect = form.querySelector('#modal-mainTopic');
+        const gradeSelect = form.querySelector('#modal-grade');
+
+        subjectSelect.addEventListener('change', async ()=>{
+            const subject = subjectSelect.value;
+            mainTopicSelect.innerHTML = '<option value="">Select Main Topic</option>';
+            if(subjects[subject]){
+                subjects[subject].forEach(topic => mainTopicSelect.innerHTML += `<option value="${topic}">${topic}</option>`);
+            }
+            gradeSelect.style.display = subject==='BIOLOGY' ? 'block' : 'none';
+            if(subject){
+                const snapshot = await db.collection(collection).where("subject","==",subject).orderBy("order","desc").limit(1).get();
+                const nextOrder = snapshot.empty ? 1 : snapshot.docs[0].data().order + 1;
+                document.getElementById('modal-order').value = nextOrder;
+            }
+        });
+    } else if(collection==='pastpapers'){
+        form.innerHTML = `
+            <label>Title</label><input type="text" id="modal-title-field" required>
+            <label>Subject</label><input type="text" id="modal-subject" required>
+            <label>Year</label><input type="number" id="modal-year" min="1900" max="2100">
+            <label>Link</label><input type="text" id="modal-link" required>
+            <label>Order</label><input type="number" id="modal-order" min="1" placeholder="Auto" />
+        `;
+    } else if(collection==='tasks'){
+        form.innerHTML = `
+            <label>Title</label><input type="text" id="modal-title-field" required>
+            <label>Description</label><input type="text" id="modal-desc" required>
+            <label>Due Date</label><input type="date" id="modal-due" required>
+            <label>Link</label><input type="text" id="modal-link" required>
+        `;
+    }
+    document.getElementById('modal').style.display='flex';
 }
 
-// Populate fields if editing
-if(editingDocId){
-db.collection(currentCollection).doc(editingDocId).get().then(doc=>{
-const d=doc.data();
-if(currentCollection==="videos"||currentCollection==="documents"){
-document.getElementById("modal-term").value=d.term||1;
-document.getElementById("modal-course").value=d.course||subjectsList[0];
-document.getElementById("modal-order").value=d.order||1;
-document.getElementById("modal-title-field").value=d.title||"";
-document.getElementById("modal-link").value=d.link||"";
-}else if(currentCollection==="pastpapers"){
-document.getElementById("modal-title-field").value=d.title||"";
-document.getElementById("modal-course").value=d.subject||subjectsList[0];
-document.getElementById("modal-year").value=d.year||"";
-document.getElementById("modal-link").value=d.link||"";
-}else{
-document.getElementById("modal-title-field").value=d.title||"";
-document.getElementById("modal-desc").value=d.description||"";
-document.getElementById("modal-due").value=d.dueDate?.toDate().toISOString().substr(0,10)||"";
-document.getElementById("modal-link").value=d.link||"";
-}
-});
+function closeModal(){ document.getElementById('modal').style.display='none'; }
+
+// --- Load collections ---
+function loadCollection(collection){
+    const tbody = document.getElementById(`${collection}-body`);
+    tbody.innerHTML='';
+    db.collection(collection).get().then(snapshot=>{
+        snapshot.forEach(doc=>{
+            const data = doc.data();
+            const tr = document.createElement('tr');
+            if(collection==='videos'||collection==='documents'){
+                const grade = data.grade || '';
+                tr.dataset.grade = grade;
+                tr.dataset.mainTopic = data.mainTopic || '';
+                tr.innerHTML = `
+                    <td>${data.order||''}</td>
+                    <td>${data.title}</td>
+                    <td>${data.subject}</td>
+                    <td>${grade}</td>
+                    <td>${data.mainTopic||''}</td>
+                    <td><a href="${data.link}" target="_blank">Link</a></td>
+                    <td>
+                        <button class="action-btn edit" onclick="editDoc('${collection}','${doc.id}')">Edit</button>
+                        <button class="action-btn delete" onclick="deleteDoc('${collection}','${doc.id}')">Delete</button>
+                    </td>
+                `;
+            } else if(collection==='pastpapers'){
+                tr.innerHTML = `
+                    <td>${data.order||''}</td>
+                    <td>${data.title}</td>
+                    <td>${data.subject}</td>
+                    <td>${data.year||''}</td>
+                    <td><a href="${data.link}" target="_blank">Link</a></td>
+                    <td>
+                        <button class="action-btn edit" onclick="editDoc('${collection}','${doc.id}')">Edit</button>
+                        <button class="action-btn delete" onclick="deleteDoc('${collection}','${doc.id}')">Delete</button>
+                    </td>
+                `;
+            } else if(collection==='tasks'){
+                tr.innerHTML = `
+                    <td>${data.title}</td>
+                    <td>${data.description}</td>
+                    <td>${data.dueDate ? data.dueDate.toDate().toLocaleDateString() : ''}</td>
+                    <td><a href="${data.link}" target="_blank">Link</a></td>
+                    <td>
+                        <button class="action-btn edit" onclick="editDoc('${collection}','${doc.id}')">Edit</button>
+                        <button class="action-btn delete" onclick="deleteDoc('${collection}','${doc.id}')">Delete</button>
+                    </td>
+                `;
+            }
+            tbody.appendChild(tr);
+        });
+
+        // Sort Biology separately
+        if(collection==='videos'||collection==='documents'){
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            rows.sort((a,b)=>{
+                const subA = a.children[2].textContent;
+                const subB = b.children[2].textContent;
+                if(subA==='BIOLOGY' && subB==='BIOLOGY'){
+                    const gradeA = parseInt(a.children[3].textContent||0);
+                    const gradeB = parseInt(b.children[3].textContent||0);
+                    if(gradeA!==gradeB) return gradeA-gradeB;
+                    const topicA = a.children[4].textContent || '';
+                    const topicB = b.children[4].textContent || '';
+                    if(topicA!==topicB) return topicA.localeCompare(topicB);
+                    return (parseInt(a.children[0].textContent)||999) - (parseInt(b.children[0].textContent)||999);
+                }
+                return 0; // leave other subjects as is
+            });
+            rows.forEach(r=>tbody.appendChild(r));
+        }
+    });
 }
 
-document.getElementById("modal").style.display="flex";
-}
-
-function closeModal(){editingDocId=null;document.getElementById("modal").style.display="none";}
-
-// Save
+// --- Save ---
 async function saveModal(){
-let data={};
-if(currentCollection==="videos"||currentCollection==="documents"){
-data={
-term:Number(document.getElementById("modal-term").value),
-course:document.getElementById("modal-course").value,
-order:Number(document.getElementById("modal-order").value||1),
-title:document.getElementById("modal-title-field").value,
-link:document.getElementById("modal-link").value
-};
-}
-else if(currentCollection==="pastpapers"){
-data={
-title:document.getElementById("modal-title-field").value,
-subject:document.getElementById("modal-course").value,
-year:document.getElementById("modal-year").value,
-link:document.getElementById("modal-link").value
-};
-}
-else{
-data={
-title:document.getElementById("modal-title-field").value,
-description:document.getElementById("modal-desc").value,
-dueDate:new Date(document.getElementById("modal-due").value),
-link:document.getElementById("modal-link").value
-};
+    const collection = currentCollection;
+    let data = {};
+    if(collection==='videos'||collection==='documents'){
+        const title = document.getElementById('modal-title-field').value;
+        const subject = document.getElementById('modal-subject').value;
+        const mainTopic = document.getElementById('modal-mainTopic').value;
+        const grade = document.getElementById('modal-grade').value;
+        const link = document.getElementById('modal-link').value;
+        let order = parseInt(document.getElementById('modal-order').value);
+        if(!order){
+            const snapshot = await db.collection(collection).where("subject","==",subject).orderBy("order","desc").limit(1).get();
+            order = snapshot.empty ? 1 : snapshot.docs[0].data().order + 1;
+        }
+        data = {title, subject, mainTopic, link, order};
+        if(subject==='BIOLOGY') data.grade = grade;
+    } else if(collection==='pastpapers'){
+        const title = document.getElementById('modal-title-field').value;
+        const subject = document.getElementById('modal-subject').value;
+        const year = document.getElementById('modal-year').value;
+        const link = document.getElementById('modal-link').value;
+        let order = parseInt(document.getElementById('modal-order').value);
+        data = {title, subject, year, link, order};
+    } else if(collection==='tasks'){
+        const title = document.getElementById('modal-title-field').value;
+        const description = document.getElementById('modal-desc').value;
+        const dueDate = new Date(document.getElementById('modal-due').value);
+        const link = document.getElementById('modal-link').value;
+        data = {title, description, dueDate, link};
+    }
+
+    if(editingDocId){
+        await db.collection(collection).doc(editingDocId).update(data);
+    } else {
+        await db.collection(collection).add(data);
+    }
+    loadCollection(collection);
+    closeModal();
 }
 
-if(editingDocId){
-await db.collection(currentCollection).doc(editingDocId).update(data);
-editingDocId=null;
-}else{
-await db.collection(currentCollection).add(data);
+// --- Edit ---
+function editDoc(collection, docId){
+    editingDocId = docId;
+    openModal(collection);
+    db.collection(collection).doc(docId).get().then(doc=>{
+        const data = doc.data();
+        document.getElementById('modal-title-field').value = data.title;
+        document.getElementById('modal-subject').value = data.subject;
+        if(collection==='videos'||collection==='documents'){
+            document.getElementById('modal-mainTopic').value = data.mainTopic||'';
+            document.getElementById('modal-grade').value = data.grade||'';
+            document.getElementById('modal-link').value = data.link;
+            document.getElementById('modal-order').value = data.order||'';
+        } else if(collection==='pastpapers'){
+            document.getElementById('modal-year').value = data.year||'';
+            document.getElementById('modal-link').value = data.link;
+            document.getElementById('modal-order').value = data.order||'';
+        } else if(collection==='tasks'){
+            document.getElementById('modal-desc').value = data.description;
+            document.getElementById('modal-due').value = data.dueDate.toDate().toISOString().substr(0,10);
+            document.getElementById('modal-link').value = data.link;
+        }
+    });
 }
 
-closeModal();
-loadCollection(currentCollection);
+// --- Delete ---
+function deleteDoc(collection, docId){
+    if(confirm("Are you sure you want to delete this record?")){
+        db.collection(collection).doc(docId).delete().then(()=> loadCollection(collection));
+    }
 }
 
-// Load collection safely
-async function loadCollection(collection){
-const tbody=document.getElementById(collection+"-body");
-tbody.innerHTML=""; // clear old rows
-
-const snapshot = await db.collection(collection).get();
-const dataArr = snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
-
-if(collection==="videos"||collection==="documents"){
-dataArr.sort((a,b)=>{
-return (a.term||0)-(b.term||0) || (a.course||"").localeCompare(b.course||"") || (a.order||0)-(b.order||0);
-});
-}
-
-dataArr.forEach(d=>{
-const tr=document.createElement("tr");
-if(collection==="videos"||collection==="documents"){
-tr.innerHTML=`<td>${d.term||""}</td><td>${d.course||""}</td><td>${d.order||""}</td><td>${d.title||""}</td>
-<td><a href="${d.link||"#"}" target="_blank">Link</a></td>
-<td><button class="edit action-btn" onclick="startEdit('${collection}','${d.id}')">Edit</button>
-<button class="delete action-btn" onclick="deleteDoc('${collection}','${d.id}')">Delete</button></td>`;
-}else if(collection==="pastpapers"){
-tr.innerHTML=`<td>${d.title}</td><td>${d.subject}</td><td>${d.year}</td><td><a href="${d.link}" target="_blank">Link</a></td>
-<td><button class="edit action-btn" onclick="startEdit('${collection}','${d.id}')">Edit</button>
-<button class="delete action-btn" onclick="deleteDoc('${collection}','${d.id}')">Delete</button></td>`;
-}else{
-tr.innerHTML=`<td>${d.title}</td><td>${d.description}</td><td>${d.dueDate?.toDate().toLocaleDateString()}</td><td><a href="${d.link}" target="_blank">Link</a></td>
-<td><button class="edit action-btn" onclick="startEdit('${collection}','${d.id}')">Edit</button>
-<button class="delete action-btn" onclick="deleteDoc('${collection}','${d.id}')">Delete</button></td>`;
-}
-tbody.appendChild(tr);
-});
-}
-
-// Start edit
-function startEdit(collection,id){
-editingDocId=id;
-openModal(collection);
-}
-
-// Delete
-function deleteDoc(collection,id){
-if(confirm("Delete this item?")) db.collection(collection).doc(id).delete().then(()=>loadCollection(collection));
-}
-
-// Initial load
-["videos","documents","pastpapers","tasks"].forEach(loadCollection);
+// --- Initial Load ---
+['videos','documents','pastpapers','tasks'].forEach(col => loadCollection(col));
 </script>
 
 </body>
