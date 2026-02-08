@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Past Papers</title>
+<style>
+body { font-family: Arial, sans-serif; margin:0; background:#f0f8ff; }
+header { background:#0B3D91; color:white; padding:15px 20px; display:flex; align-items:center; box-shadow:0 2px 6px rgba(0,0,0,0.2); position:relative; }
+header h1 { margin:0; font-size:1.5em; flex-grow:1; text-align:center; }
+.back-btn { position:absolute; left:15px; background:none; border:none; font-size:24px; cursor:pointer; color:white; display:none; }
+
+.container { max-width:900px; margin:20px auto; display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:0 10px; }
+
+.card { background:white; padding:20px; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.15); text-align:center; font-weight:bold; color:#0B3D91; cursor:pointer; transition:transform 0.2s, background 0.2s; }
+.card:hover { transform:translateY(-3px); background:#e6f2ff; }
+
+#viewer { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:1000; flex-direction:column; justify-content:center; align-items:center; }
+#viewer button { position:absolute; top:20px; right:20px; font-size:28px; background:none; border:none; color:white; cursor:pointer; }
+#viewer iframe { width:90%; height:90vh; border:none; border-radius:8px; }
+</style>
+</head>
+<body>
+
+<header>
+<button class="back-btn" onclick="goBack()">&#8592;</button>
+<h1>Past Papers</h1>
+</header>
+
+<div id="mainContainer" class="container"></div>
+
+<div id="viewer">
+  <button onclick="closeViewer()">&times;</button>
+  <iframe id="paperFrame"></iframe>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+// Firebase Config
+const firebaseConfig = {
+   apiKey: "AIzaSyCvL_D8wRVC3hS0mEvTt2J_D-LG7wFFpx0",
+  authDomain: "environmentalgpt-4974a.firebaseapp.com",
+  projectId: "environmentalgpt-4974a",
+  storageBucket: "environmentalgpt-4974a.firebasestorage.app",
+  messagingSenderId: "947094029861",
+  appId: "1:947094029861:web:ffa5c1ad4abff06d6e21cc",
+  measurementId: "G-36T3Y37DS4"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// --- Variables ---
+let selectedSubject = null;
+const container = document.getElementById("mainContainer");
+const backBtn = document.querySelector(".back-btn");
+let papersData = []; // all past papers
+
+// --- Load Papers ---
+db.collection("pastpapers").get().then(snapshot => {
+    papersData = snapshot.docs.map(doc => doc.data());
+    showSubjects();
+}).catch(err => {
+    container.innerHTML = "<p style='color:red;'>Error fetching papers: " + err + "</p>";
+});
+
+// --- Show Subjects ---
+function showSubjects(){
+    container.innerHTML = "";
+    backBtn.style.display = "none";
+    const subjects = [...new Set(papersData.map(p => p.subject))];
+    subjects.forEach(sub => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.textContent = sub;
+        card.onclick = () => {
+            selectedSubject = sub;
+            showFiles();
+        };
+        container.appendChild(card);
+    });
+}
+
+// --- Show Files ---
+function showFiles(){
+    container.innerHTML = "";
+    backBtn.style.display = "inline-block";
+    const files = papersData.filter(p => p.subject === selectedSubject);
+    if(files.length === 0){
+        container.innerHTML = "<p>No papers found for this subject.</p>";
+        return;
+    }
+    files.forEach(f => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.textContent = f.title;
+        card.onclick = () => openViewer(f.link);
+        container.appendChild(card);
+    });
+}
+
+// --- Back button ---
+function goBack(){
+    if(selectedSubject){
+        selectedSubject = null;
+        showSubjects();
+    }
+}
+
+// --- Viewer ---
+function openViewer(link){
+    document.getElementById("viewer").style.display = "flex";
+    // Google Drive PDF preview
+    const idMatch = link.match(/[-\w]{25,}/);
+    const id = idMatch ? idMatch[0] : null;
+    if(id){
+        document.getElementById("paperFrame").src = `https://drive.google.com/file/d/${id}/preview`;
+    } else {
+        document.getElementById("paperFrame").src = link;
+    }
+}
+function closeViewer(){
+    document.getElementById("viewer").style.display = "none";
+    document.getElementById("paperFrame").src = "";
+}
+</script>
+
+</body>
+</html>
