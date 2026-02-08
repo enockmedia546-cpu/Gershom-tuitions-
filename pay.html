@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Make Payment</title>
+<meta name="theme-color" content="#1e3a8a">
+<style>
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom, #e0f0ff, #ffffff);
+    color: #1e3a8a;
+    text-align: center;
+}
+
+/* Logo at top */
+.logo-container {
+    text-align: center;
+    margin-top: 20px;
+}
+.logo-container img {
+    width: 120px;
+    height: auto;
+}
+
+/* Header with back button */
+.payment-header {
+    background-color: #1e3a8a;
+    color: white;
+    padding: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    position: relative;
+    border-radius: 8px 8px 0 0;
+}
+
+.payment-header .back-btn {
+    position: absolute;
+    left: 15px;
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid white;
+    transition: 0.3s;
+}
+.payment-header .back-btn:hover {
+    background-color: white;
+    color: #1e3a8a;
+}
+.payment-header span {
+    flex: 1;
+    text-align: center;
+}
+
+/* Payment Container */
+.payment-container {
+    max-width: 400px;
+    width: 90%;
+    margin: 30px auto 60px;
+    padding: 25px;
+    background-color: #f8fbff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.payment-container h2 {
+    margin-bottom: 10px;
+    font-size: 22px;
+}
+
+.payment-container .amount {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.payment-container p.instructions {
+    text-align: left;
+    margin-bottom: 20px;
+    font-size: 15px;
+    color: #333;
+}
+
+/* Network Providers in one row, responsive */
+.provider-section {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.provider {
+    flex: 1 1 140px;
+    max-width: 160px;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: 0.3s;
+    font-weight: bold;
+    color: white;
+}
+.provider img {
+    width: 35px;
+    height: auto;
+}
+.provider.mtn { 
+    background: #FFDD57;
+    color: #1e1e1e; 
+}
+.provider.mtn:hover { 
+    background: #FFC933; 
+}
+.provider.airtel { 
+    background: #D32F2F; 
+}
+.provider.airtel:hover { 
+    background: #B71C1C; 
+}
+
+input.receiver-number {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+#copy-btn {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 16px;
+    background-color: #1e3a8a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+#copy-btn:hover {
+    background-color: #334155;
+}
+
+/* Floating WhatsApp */
+.whatsapp-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.whatsapp-float:hover {
+    transform: scale(1.1);
+}
+.whatsapp-float img {
+    width: 35px;
+    height: 35px;
+}
+</style>
+</head>
+<body>
+
+<!-- Logo -->
+<div class="logo-container">
+    <img src="fincep.jpg" alt="Fincep Logo">
+</div>
+
+<!-- Header with back button -->
+<header class="payment-header">
+    <a href="index.html" class="back-btn">&#8592;</a>
+    <span> Payment</span>
+</header>
+
+<div class="payment-container">
+    <h2>Pay with Mobile Money</h2>
+    <div class="amount">Amount: ZMW 40.00</div>
+    <p class="instructions">
+        <strong>Instructions:</strong><br>
+        1. Select your network provider.<br>
+        2. Click "Copy Number & Pay" to copy the receiver number.<br>
+        3. You will be redirected to dial <strong>*115#</strong> on your phone.<br>
+        4. Complete the payment and take a screenshot.<br>
+        5. Send the screenshot to the admin via WhatsApp by clicking the floating button at the bottom right.
+    </p>
+
+    <div class="provider-section">
+        <div class="provider mtn" onclick="preparePayment('MTN', '')">
+            <img src="mtn.png" alt="MTN" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/2b/MTN_logo.svg'"> MTN
+        </div>
+        <div class="provider airtel" onclick="preparePayment('Airtel', '')">
+            <img src="airtel.png" alt="Airtel" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/7/7e/Airtel_logo.svg'"> Airtel
+        </div>
+    </div>
+
+    <input type="text" class="receiver-number" id="receiver-number" readonly placeholder="Receiver number will appear here">
+    <button id="copy-btn">Copy Number & Pay</button>
+</div>
+
+<!-- Floating WhatsApp -->
+<a href="https://wa.me/260" target="_blank" class="whatsapp-float">
+    <img src="images/whatsapp.png" alt="WhatsApp" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg'">
+</a>
+
+<script>
+let selectedNumber = '';
+
+function preparePayment(provider, number) {
+    selectedNumber = number;
+    document.getElementById('receiver-number').value = number;
+    alert(`${provider} selected! Click "Copy Number & Pay" to proceed.`);
+}
+
+document.getElementById('copy-btn').addEventListener('click', () => {
+    const receiverInput = document.getElementById('receiver-number');
+    if (!selectedNumber) {
+        alert('Please select a provider first.');
+        return;
+    }
+
+    receiverInput.select();
+    receiverInput.setSelectionRange(0, 99999);
+
+    navigator.clipboard.writeText(receiverInput.value)
+        .then(() => {
+            alert('Receiver number copied! Redirecting to *115#...');
+            window.location.href = "tel:*115#";
+        })
+        .catch(err => alert('Failed to copy. Please copy manually.'));
+});
+</script>
+
+</body>
+</html>
